@@ -43,13 +43,13 @@ Verifying - Enter Export Password:
 [2023-03-09 13:28:02] 👍 certificate format convert PEM to DER
 [2023-03-09 13:28:02] 👍 all of the files generated in the /tmp/tmp.VRlWStEAiV directory
 [2023-03-09 13:28:02] ✅ Completed.
-```
+``` 
 
 ## Thanks
 
 
 The script is implemented with reference to the blog [openssl-self-signed-cert](https://www.baeldung.com/openssl-self-signed-cert), and so on.
-If you have any questions, you can send me an email jw, and I will do my best to solve it.
+If you have any questions, you can send me an email, and I will do my best to solve it.
 
 
 ## License
