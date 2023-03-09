@@ -3,7 +3,7 @@ This is a self-issuing certificate tool that makes it very easy to issue certifi
 
 ## Requirements
 
-Tested on a host running Linux System
+The host running Linux System
 
 Utilities required:
 > openssl
@@ -26,25 +26,46 @@ Available options:
 -v --verbose           Print script debug info
 ```
 ## example
-You need to specify different parameters, the execution process requires you to enter the certificate password to encrypt the certificate.
+You need to specify different parameters, the execution process requires you to enter the certificate password to encrypt the certificate. 
 ```shell
 [root@localhost ~]# ./automatic-certificate-generator-tools.sh -a ecc -t 365000
-[2023-03-09 13:27:55] 📁 Created temporary working directory /tmp/tmp.VRlWStEAiV
-[2023-03-09 13:27:55] 👍 generate ca certificate file
-[2023-03-09 13:27:55] 👍 generate ca certificate file.
-[2023-03-09 13:27:55] 👍 generate server key and crt file
-[2023-03-09 13:27:55] 👍 genetate server key file
-[2023-03-09 13:27:55] 👍 genetate server certificate issuance request file
-[2023-03-09 13:27:55] 👍 genetate server certificate file
-[2023-03-09 13:27:55] 👍 genetate server fullchain file
-Enter Export Password:
-Verifying - Enter Export Password:
-[2023-03-09 13:28:02] 👍 certificate format convert CRT to P12
-[2023-03-09 13:28:02] 👍 certificate format convert CRT to PEM
-[2023-03-09 13:28:02] 👍 certificate format convert PEM to DER
-[2023-03-09 13:28:02] 👍 all of the files generated in the /tmp/tmp.VRlWStEAiV directory
-[2023-03-09 13:28:02] ✅ Completed.
+[2023-03-09 22:00:10] 📁 Created temporary working directory /tmp/tmp.CXiSQnfiWc
+[2023-03-09 22:00:10] 👍 generate ca certificate file
+[2023-03-09 22:00:10] 👍 generate ca certificate file.
+[2023-03-09 22:00:10] 👍 generate server key and crt file
+[2023-03-09 22:00:10] 👍 genetate server key file
+[2023-03-09 22:00:10] 👍 genetate server certificate issuance request file
+[2023-03-09 22:00:10] 👍 genetate server certificate file
+[2023-03-09 22:00:10] 👍 genetate server fullchain file
+[2023-03-09 22:00:10] 👍 certificate format convert CRT to P12
+[2023-03-09 22:00:10] 👍 certificate format convert CRT to PEM
+[2023-03-09 22:00:10] 👍 certificate format convert PEM to DER
+[2023-03-09 22:00:10] 👍 certificate format convert CRT to PFX
+[2023-03-09 22:00:10] 👍 all of the files generated in the /tmp/tmp.CXiSQnfiWc directory
+[2023-03-09 22:00:10] ✅ Completed.
 ``` 
+
+The default servver certificate password will not be displayed in the foreground, if you want to display the output, you need to specify the -s parameter. for example:
+
+```shell
+[root@localhost ~]# ./automatic-certificate-generator-tools.sh -a ecc -t 365000 -s
+[2023-03-09 21:59:59] 📁 Created temporary working directory /tmp/tmp.7rUO9vHovx
+[2023-03-09 21:59:59] 👍 generate ca certificate file
+[2023-03-09 21:59:59] 👍 generate ca certificate file.
+[2023-03-09 21:59:59] 👍 generate server key and crt file
+[2023-03-09 21:59:59] 👍 genetate server key file
+[2023-03-09 21:59:59] 👍 genetate server certificate issuance request file
+[2023-03-09 21:59:59] 👍 genetate server certificate file
+[2023-03-09 21:59:59] 👍 genetate server fullchain file
+[2023-03-09 21:59:59] 👍 certificate server password is ee0668eb
+[2023-03-09 21:59:59] 👍 certificate format convert CRT to P12
+[2023-03-09 21:59:59] 👍 certificate format convert CRT to PEM
+[2023-03-09 21:59:59] 👍 certificate format convert PEM to DER
+[2023-03-09 21:59:59] 👍 certificate format convert CRT to PFX
+[2023-03-09 21:59:59] 👍 all of the files generated in the /tmp/tmp.7rUO9vHovx directory
+[2023-03-09 21:59:59] ✅ Completed.
+```
+This method is recommended
 
 ## Thanks
 
