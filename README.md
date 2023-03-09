@@ -25,7 +25,8 @@ Available options:
 -h --help              Print this help and exit
 -v --verbose           Print script debug info
 ```
-
+## example
+You need to specify different parameters, the execution process requires you to enter the certificate password to encrypt the certificate.
 ```shell
 [root@localhost ~]# ./automatic-certificate-generator-tools.sh -a ecc -t 365000
 [2023-03-09 13:27:55] 📁 Created temporary working directory /tmp/tmp.VRlWStEAiV
