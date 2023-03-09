@@ -1,5 +1,5 @@
 # automatic-certificate-generator-tools
-This is a self-issuing certificate tool that makes it very easy to issue certificates.
+This is a self-issuing certificate tool that makes it very easy to issue certificates, All certificate formats can be generated.
 
 ## Requirements
 
