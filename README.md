@@ -3,7 +3,7 @@ This is a self-issuing certificate tool that makes it very easy to issue certifi
 
 ## Requirements
 
-The host running Linux System
+The script  running Linux System
 
 Utilities required:
 > openssl
