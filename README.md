@@ -33,21 +33,23 @@ Available options:
 You need to specify different parameters, the execution process requires you to enter the certificate password to encrypt the certificate. 
 ```shell
 [root@localhost ~]# ./automatic-certificate-generator-tools.sh -a ecc -t 365000
-[2023-03-10 08:45:02] 📁 Created temporary working directory /tmp/tmp.x9lvZDxSHn
-[2023-03-10 08:45:02] 👍 generate ca certificate file
-[2023-03-10 08:45:02] 👍 generate ca certificate file.
-[2023-03-10 08:45:02] 👍 generate server key and crt file
-[2023-03-10 08:45:02] 👍 genetate server key file
-[2023-03-10 08:45:02] 👍 genetate server certificate issuance request file
-[2023-03-10 08:45:02] 👍 genetate server certificate file
-[2023-03-10 08:45:02] 👍 genetate server fullchain file
-[2023-03-10 08:45:02] 👍 The certificate password is in /tmp/tmp.x9lvZDxSHn/.password file
-[2023-03-10 08:45:02] 👍 certificate format convert CRT to P12
-[2023-03-10 08:45:02] 👍 certificate format convert CRT to PEM
-[2023-03-10 08:45:02] 👍 certificate format convert PEM to DER
-[2023-03-10 08:45:02] 👍 certificate format convert CRT to PFX
-[2023-03-10 08:45:02] 👍 all of the files generated in the /tmp/tmp.x9lvZDxSHn directory
-[2023-03-10 08:45:02] ✅ Completed.
+[2023-03-16 13:10:22] 👶 Starting up...
+[2023-03-16 13:10:22] 📁 Created temporary working directory /tmp/tmp.A3Pw7tpoWh
+[2023-03-16 13:10:22] 👍 Get domain name
+[2023-03-16 13:10:22] 👍 The algorithm used to obtain the certificate
+[2023-03-16 13:10:22] 👍 generate ca certificate file
+[2023-03-16 13:10:22] 👍 generate server key and crt file
+[2023-03-16 13:10:22] 👍 genetate server key file
+[2023-03-16 13:10:22] 👍 genetate server csr file
+[2023-03-16 13:10:22] 👍 genetate server certificate file
+[2023-03-16 13:10:22] 👍 genetate server fullchain file
+[2023-03-16 13:10:22] 👍 The certificate password is in /tmp/tmp.A3Pw7tpoWh/.password file
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to P12
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to PEM
+[2023-03-16 13:10:22] 👍 certificate format convert PEM to DER
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to PFX
+[2023-03-16 13:10:22] 👍 all of the files generated in the /tmp/tmp.A3Pw7tpoWh directory
+[2023-03-16 13:10:22] ✅ Completed.
 ``` 
 This method is recommended, because it can hide secrets.
 
@@ -56,26 +58,26 @@ The default servver certificate password will not be displayed in the foreground
 
 ```shell
 [root@localhost ~]# ./automatic-certificate-generator-tools.sh -a ecc -t 365000 -s
-[2023-03-09 21:59:59] 📁 Created temporary working directory /tmp/tmp.7rUO9vHovx
-[2023-03-09 21:59:59] 👍 generate ca certificate file
-[2023-03-09 21:59:59] 👍 generate ca certificate file.
-[2023-03-09 21:59:59] 👍 generate server key and crt file
-[2023-03-09 21:59:59] 👍 genetate server key file
-[2023-03-09 21:59:59] 👍 genetate server certificate issuance request file
-[2023-03-09 21:59:59] 👍 genetate server certificate file
-[2023-03-09 21:59:59] 👍 genetate server fullchain file
-[2023-03-09 21:59:59] 👍 certificate server password is ee0668eb
-[2023-03-09 21:59:59] 👍 certificate format convert CRT to P12
-[2023-03-09 21:59:59] 👍 certificate format convert CRT to PEM
-[2023-03-09 21:59:59] 👍 certificate format convert PEM to DER
-[2023-03-09 21:59:59] 👍 certificate format convert CRT to PFX
-[2023-03-09 21:59:59] 👍 all of the files generated in the /tmp/tmp.7rUO9vHovx directory
-[2023-03-09 21:59:59] ✅ Completed.
+[2023-03-16 13:10:22] 👶 Starting up...
+[2023-03-16 13:10:22] 📁 Created temporary working directory /tmp/tmp.A3Pw7tpoWh
+[2023-03-16 13:10:22] 👍 Get domain name
+[2023-03-16 13:10:22] 👍 The algorithm used to obtain the certificate
+[2023-03-16 13:10:22] 👍 generate ca certificate file
+[2023-03-16 13:10:22] 👍 generate server key and crt file
+[2023-03-16 13:10:22] 👍 genetate server key file
+[2023-03-16 13:10:22] 👍 genetate server csr file
+[2023-03-16 13:10:22] 👍 genetate server certificate file
+[2023-03-16 13:10:22] 👍 genetate server fullchain file
+[2023-03-16 13:10:22] 👍 The certificate server password is ee0668eb
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to P12
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to PEM
+[2023-03-16 13:10:22] 👍 certificate format convert PEM to DER
+[2023-03-16 13:10:22] 👍 certificate format convert CRT to PFX
+[2023-03-16 13:10:22] 👍 all of the files generated in the /tmp/tmp.A3Pw7tpoWh directory
+[2023-03-16 13:10:22] ✅ Completed.
 ```
 
-
 ## Thanks
-
 
 The script is implemented with reference to the blog [openssl-self-signed-cert](https://www.baeldung.com/openssl-self-signed-cert), and so on.
 If you have any questions, you can send me an email, and I will do my best to solve it.
