@@ -59,8 +59,6 @@ function generate_random_pwd() {
     random_str=$(IFS=; echo "${seqrand[*]}")
 }
 
-
-
 function parse_param() {
     length=${length:-8}
     # if arguement is empty, have a default value
@@ -114,39 +112,38 @@ function parse_param() {
 
    generate_random_pwd
    password=${password:-${random_str}}
+   log "👶 Starting up..."
 }
 
 parse_param "$@"
 
+function generate_domain_name() {
+    get_domain="DNS:*.${domain_name},DNS:${domain_name}"
+    if [ -n "${domain_name}" ]; then
+        # split domain name
+        OLD_IFS="$IFS"
+        IFS=","
+        domain_array=("${domain_name}")
+        IFS="$OLD_IFS"
 
+        domain_len=${#domain_array[@]}
 
-get_domain="DNS:*.${domain_name},DNS:${domain_name}"
-if [ -n "${domain_name}" ]; then
-    # split domain name
-    OLD_IFS="$IFS"
-    IFS=","
-    # shellcheck disable=SC2206
-    domain_array=(${domain_name})
-    IFS="$OLD_IFS"
-
-    domain_len=${#domain_array[@]}
-
-    domain=${domain_array[0]}
-    get_domain=""
-    for ((i=0;i<domain_len;i++))
-   {
-    if [ $i = 0 ];then
-        get_domain="DNS:${domain_array[i]}"
-    else
-        get_domain="${get_domain},DNS:${domain_array[i]}"
+        domain=${domain_array[0]}
+        get_domain=""
+        for ((i=0;i<domain_len;i++))
+       {
+        if [ $i = 0 ];then
+            get_domain="DNS:${domain_array[i]}"
+        else
+            get_domain="${get_domain},DNS:${domain_array[i]}"
+        fi
+       }
     fi
-   }
-fi
 
-ca_subj="/C=CN/ST=Hubei/L=Wuhan/O=MY/CN=MY CA"
-server_subj="/C=CN/ST=Hubei/L=Wuhan/O=MY/CN=${domain}"
-# where, the C is Country，the ST is state，the L is local，the O is Organization，the OU is Organization Unit，the CN is common name
-
+    # where, the C is Country，the ST is state，the L is local，the O is Organization，the OU is Organization Unit，the CN is common name
+    ca_subj="/C=CN/ST=ShangHai/L=ShangHai/O=MY/CN=MY CA"
+    server_subj="/C=CN/ST=ShangHai/L=ShangHai/O=MY/CN=${domain}"
+}
 
 # The default create a a random directory in /tmp
 certificate_dir=$(mktemp -d)
@@ -181,10 +178,12 @@ function get_algorithm() {
 }
 
 # generate ca certificate file
-function generate_ca_cert_file() {
+function generate_ca_cert() {
+    generate_domain_name
+    log "👍 Get domain name"
     get_algorithm
+    log "👍 The algorithm used to obtain the certificate"
     if [ ! -f "${ca_key_file}" ]; then
-        log  "👍 generate ca certificate file"
         if [[ ${algorithm} = "rsa" ]] ; then
             openssl genrsa -out ${ca_key_file} ${rsa_len}
         elif [[ ${algorithm} = "ecc" ]] ; then
@@ -192,16 +191,16 @@ function generate_ca_cert_file() {
         fi
         openssl req -new -x509 -days ${days} -key ${ca_key_file} -out ${ca_crt_file} -subj "${ca_subj}"
         if [ $? -eq 0 ]; then
-            log "👍 generate ca certificate file."
+            log "👍 generate ca certificate file"
         else
-            die "💥 generate ca certificate file failed, execute command found error."
+            die "💥 generate ca certificate file failed, execute command error"
         fi
     fi
 }
 
 # Generate server certificate key and crt file
-function generate_server_key_and_crt_file() {
-    generate_ca_cert_file
+function generate_server_key_and_crt() {
+    generate_ca_cert
     if [ ! -f "${srv_key_file}" ]; then
         log  "👍 generate server key and crt file"
         if [[ ${algorithm} = "rsa" ]] ; then
@@ -212,7 +211,7 @@ function generate_server_key_and_crt_file() {
         log "👍 genetate server key file"
 
         openssl req -new  -sha256 -key ${srv_key_file} -out ${srv_csr_file} -subj "${server_subj}"
-        log "👍 genetate server certificate issuance request file"
+        log "👍 genetate server csr file"
 
         printf "[ SAN ]\nauthorityKeyIdentifier=keyid,issuer\nbasicConstraints=CA:FALSE\nkeyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\nsubjectAltName=${get_domain}" > ${cfg_san_file}
         openssl x509 -req  -days ${days} -sha256 -CA ${ca_crt_file} -CAkey ${ca_key_file} -CAcreateserial -in ${srv_csr_file}  -out ${srv_crt_file} -extfile ${cfg_san_file} -extensions SAN > /dev/null 2>&1
@@ -242,6 +241,6 @@ function generate_server_key_and_crt_file() {
         log "👍 certificate format convert CRT to PFX"
     fi
 }
-generate_server_key_and_crt_file
-log "👍 all of the files generated in the $certificate_dir directory"
+generate_server_key_and_crt
+log "👍 all of the files generated in $certificate_dir directory"
 die "✅ Completed." 0
