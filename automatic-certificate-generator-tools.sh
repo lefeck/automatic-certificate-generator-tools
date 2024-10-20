@@ -2,30 +2,28 @@
 #
 set -Eeuo pipefail
 
-trap  - SIGINT SIGTERM ERR EXIT
+trap 'exit 1' SIGINT SIGTERM ERR EXIT
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 # check whether the date command-line tools exists
 [[ ! -x "$(command -v date)" ]] && echo "💥 date command not found." && exit 1
 
 function log() {
-        echo >&2 -e "[$(date +"%Y-%m-%d %H:%M:%S")] ${1-}"
+    echo >&2 -e "[$(date +"%Y-%m-%d %H:%M:%S")] ${1-}"
 }
 
 function die() {
-        local msg=$1
-        local code=${2-1} # Bash parameter expansion - default exit status 1. See https://wiki.bash-hackers.org/syntax/pe#use_a_default_value
-        log "$msg"
-        exit "$code"
+    local msg=$1
+    local code=${2-1} # Bash parameter expansion - default exit status 1. See https://wiki.bash-hackers.org/syntax/pe#use_a_default_value
+    log "$msg"
+    exit "$code"
 }
 
-
 function usage() {
-  cat << EOF
+    cat << EOF
 Usage: $(basename "${BASH_SOURCE[0]}") [-a [rsa|ecc]] [-d <domain>] [-n <name>] [-t <days>] [-p <password>] [-s <show>] [-l <length>] [-h] [-v]"
 
 💁 This script will be automatic certificate genetatory.
-
 
 Available options:
 
@@ -36,25 +34,30 @@ Available options:
 -p --password          Set password for service certificate, default the password is random strings.
 -s --show              Whether to display the service certificate password in the foreground, By default it will write to the .password file, if it is true it will output
                        the plaintext password in the foreground.
+-C --country           Set the country of the certificate, default the country is "CN".
+-S --state             Set the state of the certificate, default the state is "ShangHai".
+-L --local             Set the local of the certificate, default the local is "ShangHai".
+-O --organization      Set the organization of the certificate, default the organization is "MY".
+-N --common_name       Set the common name of the certificate, default the common name is "MY CA".
+-c --cacert            Set the path of the CA certificate file, default the cacert is empty, if the cacert is empty, it will generate a new CA certificate file.
 -l --length            Set password of the length, default the password length is 8 digits, This parameter and the -p option cannot be used together.
 -h --help              Print this help and exit
 -v --verbose           Print script debug info
 EOF
-  exit
+    exit
 }
 
 function generate_random_pwd() {
     length=${length}
-    i=1
+    i=0
 
     seq=(0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
 
     num_seq=${#seq[@]}
 
-    while [ "$i" -le "$length" ]
-    do
-     seqrand[$i]=${seq[$((RANDOM%num_seq))]}
-     let "i=i+1"
+    while [ "$i" -lt "$length" ]; do
+        seqrand[$i]=${seq[$((RANDOM % num_seq))]}
+        let "i=i+1"
     done
     random_str=$(IFS=; echo "${seqrand[*]}")
 }
@@ -67,52 +70,48 @@ function parse_param() {
     srv_key_name=${srv_key_name:-server}
     days=${days:-3650}
     show=${show:-"false"}
+    cacert=${cacert:-""}
+    cakey=${cakey:-""}
+
+    country=${country:-CN}
+    state=${state:-ShangHai}
+    local=${local:-ShangHai}
+    organization=${organization:-MY}
+    common_name=${common_name:-"MY CA"}
+
     # parse argument of the command
-    getopt_cmd=$(getopt -o a:d:n:t:p:l:shv --long algorithm:,domain:,name:,days:,password:,length:,show,help,verbose -n $(basename $0) -- "$@")
+    getopt_cmd=$(getopt -o a:d:n:t:p:l:k:c:C:S:L:O:N:shv --long algorithm:,domain:,name:,days:,password:,length:,cacert:,cakey:,country:,state:,local:,organization:,common_name:,show,help,verbose -n $(basename $0) -- "$@")
+
     if [ $? -ne 0 ]; then
         exit 1
     fi
     eval set -- "$getopt_cmd"
     while [ -n "$1" ]; do
         case "$1" in
-                -a|--algorithm)
-                    algorithm="$2"
-                    shift ;;
-                -d|--domain)
-                    domain_name="$2"
-                    shift ;;
-                -n|--name)
-                    srv_key_name="$2"
-                    shift ;;
-                -t|--time)
-                    days="$2"
-                    shift ;;
-                -p|--password)
-                    password="$2"
-                    shift ;;
-                -l|--length)
-                    length="$2"
-                    shift ;;
-                -s|--show)
-                    show="true"
-                    ;;
-                -h|--help)
-                    usage
-                    ;;
-                -v|--verbose)
-                    set -x
-                    ;;
-                --) shift
-                    break ;;
-                ?*) echo "$1 is not an option"
-                    exit 1 ;;
+            -a | --algorithm) algorithm=$2; shift 2 ;;
+            -d | --domain) domain_name=$2; shift 2 ;;
+            -n | --name) srv_key_name=$2; shift 2 ;;
+            -t | --days) days=$2; shift 2 ;;
+            -p | --password) password=$2; shift 2 ;;
+            -l | --length) length=$2; shift 2 ;;
+            -c | --cacert) cacert=$2; shift 2 ;;
+            -k | --cakey) cakey=$2; shift 2 ;;
+            -s | --show) show="true"; shift ;;
+            -C | --country) country=$2; shift 2 ;;
+            -S | --state) state=$2; shift 2 ;;
+            -L | --local) local=$2; shift 2 ;;
+            -O | --organization) organization=$2; shift 2 ;;
+            -N | --common_name) common_name=$2; shift 2 ;;
+            -h | --help) usage ;;
+            -v | --verbose) set -x; shift ;;
+            --) shift; break ;;
+            *) usage ;;
         esac
-        shift
     done
 
-   generate_random_pwd
-   password=${password:-${random_str}}
-   log "👶 Starting up..."
+    generate_random_pwd
+    password=${password:-${random_str}}
+    log "👶 Starting up..."
 }
 
 parse_param "$@"
@@ -123,54 +122,50 @@ function generate_domain_name() {
         # split domain name
         OLD_IFS="$IFS"
         IFS=","
-        domain_array=("${domain_name}")
+        read -r -a domain_array <<< "${domain_name}"
         IFS="$OLD_IFS"
 
         domain_len=${#domain_array[@]}
 
         domain=${domain_array[0]}
         get_domain=""
-        for ((i=0;i<domain_len;i++))
-       {
-        if [ $i = 0 ];then
-            get_domain="DNS:${domain_array[i]}"
-        else
-            get_domain="${get_domain},DNS:${domain_array[i]}"
-        fi
-       }
+        for ((i = 0; i < domain_len; i++)); do
+            get_domain+="DNS.${i}=${domain_array[$i]},"
+        done
+        get_domain=${get_domain%,}
     fi
 
-    # where, the C is Country，the ST is state，the L is local，the O is Organization，the OU is Organization Unit，the CN is common name
-    ca_subj="/C=CN/ST=ShangHai/L=ShangHai/O=MY/CN=MY CA"
-    server_subj="/C=CN/ST=ShangHai/L=ShangHai/O=MY/CN=${domain}"
+    ca_subj="/C=${country}/ST=${state}/L=${local}/O=${organization}/CN=${common_name}"
+    server_subj="/C=${country}/ST=${state}/L=${local}/O=${organization}/CN=${domain}"
 }
 
+# domain.com
 # The default create a a random directory in /tmp
 certificate_dir=$(mktemp -d)
 if [[ ! "${certificate_dir}" || ! -d "${certificate_dir}" ]]; then
-        die "💥 Could not create temporary working directory."
+    die "💥 Could not create temporary working directory."
 else
-        log "📁 Created temporary working directory $certificate_dir"
+    log "📁 Created temporary working directory $certificate_dir"
 fi
 
+fqdn=${srv_key_name}.${domain_name}
 ca_key_file="${certificate_dir}/ca.key"
 ca_crt_file="${certificate_dir}/ca.crt"
-srv_key_file="${certificate_dir}/${srv_key_name}.key"
-srv_csr_file="${certificate_dir}/${srv_key_name}.csr"
-srv_crt_file="${certificate_dir}/${srv_key_name}.crt"
-srv_p12_file="${certificate_dir}/${srv_key_name}.p12"
-srv_pem_file="${certificate_dir}/${srv_key_name}.pem"
-srv_der_file="${certificate_dir}/${srv_key_name}.der"
-srv_pfx_file="${certificate_dir}/${srv_key_name}.pfx"
-srv_fullchain_file="${certificate_dir}/${srv_key_name}-fullchain.crt"
-cfg_san_file="${certificate_dir}/san.cnf"
-
+srv_key_file="${certificate_dir}/${fqdn}.key"
+srv_csr_file="${certificate_dir}/${fqdn}.csr"
+srv_crt_file="${certificate_dir}/${fqdn}.crt"
+srv_p12_file="${certificate_dir}/${fqdn}.p12"
+srv_pem_file="${certificate_dir}/${fqdn}.pem"
+srv_der_file="${certificate_dir}/${fqdn}.der"
+srv_pfx_file="${certificate_dir}/${fqdn}.pfx"
+srv_fullchain_file="${certificate_dir}/${fqdn}-fullchain.crt"
+v3_extension_file="${certificate_dir}/v3.ext"
 
 # algorithm config
 function get_algorithm() {
-    if [[ ${algorithm} = "rsa" ]] ; then
+    if [[ ${algorithm} = "rsa" ]]; then
         rsa_len=2048
-    elif [[ ${algorithm} = "ecc" ]] ; then
+    elif [[ ${algorithm} = "ecc" ]]; then
         ecc_name=prime256v1
     else
         usage
@@ -184,63 +179,103 @@ function generate_ca_cert() {
     get_algorithm
     log "👍 The algorithm used to obtain the certificate"
     if [ ! -f "${ca_key_file}" ]; then
-        if [[ ${algorithm} = "rsa" ]] ; then
-            openssl genrsa -out ${ca_key_file} ${rsa_len}
-        elif [[ ${algorithm} = "ecc" ]] ; then
-            openssl ecparam -out ${ca_key_file} -name ${ecc_name} -genkey
+        if [[ ${algorithm} = "rsa" ]]; then
+            openssl genpkey -algorithm RSA -out ${ca_key_file} -pkeyopt rsa_keygen_bits:${rsa_len} > /dev/null 2>&1
+        elif [[ ${algorithm} = "ecc" ]]; then
+            openssl ecparam -name ${ecc_name} -genkey -noout -out ${ca_key_file} > /dev/null 2>&1
         fi
-        openssl req -new -x509 -days ${days} -key ${ca_key_file} -out ${ca_crt_file} -subj "${ca_subj}"
+        log "👍 generate ca certificate key file"
+        openssl req -x509 -new -days ${days} -subj "${ca_subj}" -key ${ca_key_file} -out ${ca_crt_file}
         if [ $? -eq 0 ]; then
             log "👍 generate ca certificate file"
         else
-            die "💥 generate ca certificate file failed, execute command error"
+            die "💥 Failed to generate ca certificate file"
         fi
     fi
+}
+
+function get_cakey_and_cacert() {
+    if [ ! -f "${cacert}" ] && [ ! -f "${cakey}" ]; then
+        die "💥 ${cacert} and ${cakey} file is not exists"
+    else
+        log "👍 ${cacert} and ${cakey} file is ok"
+        handle_certificate
+    fi
+    return
+}
+
+function handle_certificate() {
+    if [ ! -f "${srv_key_file}" ]; then
+        log "👍 generate server key and crt file"
+        if [[ ${algorithm} = "rsa" ]]; then
+            openssl genpkey -algorithm RSA -out ${srv_key_file} -pkeyopt rsa_keygen_bits:${rsa_len} > /dev/null 2>&1
+        elif [[ ${algorithm} = "ecc" ]]; then
+            openssl ecparam -name ${ecc_name} -genkey -noout -out ${srv_key_file} > /dev/null 2>&1
+        fi
+        log "👍 generate server key file"
+
+        openssl req -new -sha256 -subj "${server_subj}" -key ${srv_key_file} -out ${srv_csr_file}
+        log "👍 generate server csr file"
+
+        log "👍 Generate a x509 v3 extension file"
+        cat > ${v3_extension_file} <<-EOF
+[SAN]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1=${get_domain}
+DNS.2=${fqdn}
+EOF
+
+        openssl x509 -req -sha256 -days ${days} -extfile ${v3_extension_file} -extensions SAN -CA ${ca_crt_file} -CAkey ${ca_key_file} -CAcreateserial -in ${srv_csr_file} -out ${srv_crt_file} > /dev/null 2>&1
+        log "👍 generate server certificate file"
+
+        cat ${srv_crt_file} ${ca_crt_file} > ${srv_fullchain_file}
+        log "👍 generate server fullchain file"
+
+        openssl pkcs12 -export -inkey ${srv_key_file} -in ${srv_crt_file} -CAfile ${ca_crt_file} -chain -passout pass:${password} -out ${srv_p12_file}
+        if [ ${show} == "true" ]; then
+            log "👍 The certificate server password is ${password}"
+        else
+            printf "certificate password: ${password}\n" > "${certificate_dir}/.password"
+            log "👍 The certificate password is in ${certificate_dir}/.password file"
+        fi
+        certificate_format_convert
+    fi
+}
+
+function certificate_format_convert() {
+    log "👍 certificate format convert CRT to P12"
+    # Convert CRT to PEM
+    openssl x509 -in ${srv_crt_file} -out ${srv_pem_file}
+    log "👍 certificate format convert CRT to PEM"
+    # Convert PEM to DER
+    openssl x509 -outform der -in ${srv_pem_file} -out ${srv_der_file}
+    log "👍 certificate format convert PEM to DER"
+    # Convert CRT to PFX
+    openssl pkcs12 -inkey ${srv_key_file} -in ${srv_crt_file} -export -passout pass:${password} -out ${srv_pfx_file}
+    log "👍 certificate format convert CRT to PFX"
 }
 
 # Generate server certificate key and crt file
 function generate_server_key_and_crt() {
     generate_ca_cert
-    if [ ! -f "${srv_key_file}" ]; then
-        log  "👍 generate server key and crt file"
-        if [[ ${algorithm} = "rsa" ]] ; then
-            openssl genrsa -out ${srv_key_file} ${rsa_len}
-        elif [[ ${algorithm} = "ecc" ]] ; then
-            openssl ecparam -genkey -name ${ecc_name} -out ${srv_key_file}
-        fi
-        log "👍 genetate server key file"
+    handle_certificate
+}
 
-        openssl req -new  -sha256 -key ${srv_key_file} -out ${srv_csr_file} -subj "${server_subj}"
-        log "👍 genetate server csr file"
-
-        printf "[ SAN ]\nauthorityKeyIdentifier=keyid,issuer\nbasicConstraints=CA:FALSE\nkeyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\nsubjectAltName=${get_domain}" > ${cfg_san_file}
-        openssl x509 -req  -days ${days} -sha256 -CA ${ca_crt_file} -CAkey ${ca_key_file} -CAcreateserial -in ${srv_csr_file}  -out ${srv_crt_file} -extfile ${cfg_san_file} -extensions SAN > /dev/null 2>&1
-        log "👍 genetate server certificate file"
-
-        cat ${srv_crt_file} ${ca_crt_file} > ${srv_fullchain_file}
-        log "👍 genetate server fullchain file"
-
-        openssl pkcs12 -export -inkey ${srv_key_file} -in ${srv_crt_file} -CAfile ${ca_crt_file} -chain -passout pass:${password} -out ${srv_p12_file}
-        #openssl rsa -in private.key -aes256 -passout pass:1234 -out private_pwd.pem
-        if [ ${show} == "true" ]; then
-          log "👍 The certificate server password is ${password}"
-        else
-          printf "certificate password: ${password}\n" > "${certificate_dir}/.password"
-          log "👍 The certificate password is in ${certificate_dir}/.password file"
-        fi
-
-        log "👍 certificate format convert CRT to P12"
-        # Convert CRT to PEM
-        openssl x509 -in ${srv_crt_file} -out ${srv_pem_file}
-        log "👍 certificate format convert CRT to PEM"
-        # Convert PEM to DER
-        openssl x509 -outform der -in ${srv_pem_file} -out ${srv_der_file}
-        log "👍 certificate format convert PEM to DER"
-        # Convert CRT to PFX
-        openssl pkcs12 -inkey ${srv_key_file} -in ${srv_crt_file} -export -passout pass:${password} -out ${srv_pfx_file}
-        log "👍 certificate format convert CRT to PFX"
+function attach_issue_certificate() {
+    if [ ! -f "${cacert}" ] && [ ! -f "${cakey}" ]; then
+        generate_server_key_and_crt
+    else
+        log "${cacert} and ${cakey} file is ok"
+        handle_certificate
     fi
 }
-generate_server_key_and_crt
+
+attach_issue_certificate
 log "👍 all of the files generated in $certificate_dir directory"
 die "✅ Completed." 0
