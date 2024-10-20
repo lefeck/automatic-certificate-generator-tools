@@ -35,12 +35,12 @@ Available options:
 -p --password          Set password for service certificate, default the password is random strings.
 -s --show              Whether to display the service certificate password in the foreground, By default it will write to the .password file, if it is true it will output
                        the plaintext password in the foreground.
+-l --length            Set password of the length, default the password length is 8 digits, This parameter and the -p option cannot be used together.
 -C --country           Set the country of the certificate, default the country is "CN".
 -S --state             Set the state of the certificate, default the state is "ShangHai".
 -L --local             Set the local of the certificate, default the local is "ShangHai".
 -O --organization      Set the organization of the certificate, default the organization is "MY".
 -N --common_name       Set the common name of the certificate, default the common name is "MY CA".
--l --length            Set password of the length, default the password length is 8 digits, This parameter and the -p option cannot be used together.
 -h --help              Print this help and exit
 -v --verbose           Print script debug info
 EOF
