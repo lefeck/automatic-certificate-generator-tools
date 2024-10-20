@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="330026b4-b1f2-4f49-af16-64287387bb9e" name="变更" comment="Optimized code structure">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ca_subject.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/automatic-certificate-generator-tools.sh" beforeDir="false" afterPath="$PROJECT_DIR$/automatic-certificate-generator-tools.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

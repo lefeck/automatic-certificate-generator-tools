@@ -21,7 +21,8 @@ function die() {
 
 function usage() {
     cat << EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [-a [rsa|ecc]] [-d <domain>] [-n <name>] [-t <days>] [-p <password>] [-s <show>] [-l <length>] [-h] [-v]"
+
+Usage: $(basename "${BASH_SOURCE[0]}") [-a [rsa|ecc]] [-d <domain>] [-n <name>] [-t <days>] [-p <password>] [-s <show>] [-l <length>] [-C <country>] [-S <state>]  [-L <local>] [-O <organization>] [-N <common_name>] [-h] [-v]"
 
 💁 This script will be automatic certificate genetatory.
 
@@ -39,7 +40,6 @@ Available options:
 -L --local             Set the local of the certificate, default the local is "ShangHai".
 -O --organization      Set the organization of the certificate, default the organization is "MY".
 -N --common_name       Set the common name of the certificate, default the common name is "MY CA".
--c --cacert            Set the path of the CA certificate file, default the cacert is empty, if the cacert is empty, it will generate a new CA certificate file.
 -l --length            Set password of the length, default the password length is 8 digits, This parameter and the -p option cannot be used together.
 -h --help              Print this help and exit
 -v --verbose           Print script debug info
