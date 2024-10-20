@@ -22,7 +22,7 @@ function die() {
 function usage() {
     cat << EOF
 
-Usage: $(basename "${BASH_SOURCE[0]}") [-a [rsa|ecc]] [-d <domain>] [-n <name>] [-t <days>] [-p <password>] [-s <show>] [-l <length>] [-C <country>] [-S <state>]  [-L <local>] [-O <organization>] [-N <common_name>] [-h] [-v]"
+Usage: $(basename "${BASH_SOURCE[0]}") [-a [rsa|ecc]] [-d <domain>] [-n <name>] [-t <days>] [-p <password>] [-s <show>] [-l <length>] [-C <country>] [-S <state>]  [-L <local>] [-O <organization>] [-N <common_name>] [-h] [-v]
 
 💁 This script will be automatic certificate genetatory.
 
